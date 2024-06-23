@@ -15,28 +15,32 @@ fn main() {
     let json_data1;
     let json_data2;
 
-    if input_mode == "tui" {
-        json_data1 = match input::get_data_from_tui(file1) {
-            Ok(res) => res,
-            Err(e) => {
-                eprintln!("Error getting JSON data from TUI for {}: {}", file1, e);
-                process::exit(0);
-            }
-        };
-        json_data2 = match input::get_data_from_tui(file2) {
-            Ok(res) => res,
-            Err(e) => {
-                eprintln!("Error getting JSON data from TUI for {}: {}", file2, e);
-                process::exit(0);
-            }
-        };
-    } else if input_mode == "quickview" {
-        json_data1 = input::get_data_from_quickview(file1);
-        json_data2 = input::get_data_from_quickview(file2);
-    } else {
-        json_data1 = input::get_data_from_inputs(file1);
-        json_data2 = input::get_data_from_inputs(file2);
-    }
+    match input_mode.as_str() {
+        "tui" | "t" => {
+            json_data1 = match input::get_data_from_tui(file1) {
+                Ok(res) => res,
+                Err(e) => {
+                    eprintln!("Error getting JSON data from TUI for {}: {}", file1, e);
+                    process::exit(0);
+                }
+            };
+            json_data2 = match input::get_data_from_tui(file2) {
+                Ok(res) => res,
+                Err(e) => {
+                    eprintln!("Error getting JSON data from TUI for {}: {}", file2, e);
+                    process::exit(0);
+                }
+            };
+        }
+        "quickview" | "q" => {
+            json_data1 = input::get_data_from_quickview(file1);
+            json_data2 = input::get_data_from_quickview(file2);
+        }
+        _ => {
+            json_data1 = input::get_data_from_inputs(file1);
+            json_data2 = input::get_data_from_inputs(file2);
+        }
+    };
 
     json_diff::show(&json_data1, &json_data2);
 }

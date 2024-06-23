@@ -160,22 +160,47 @@ fn print_quickview_data(json_data: &Value) {
     }
 }
 
+fn clear_screen() {
+    prompt(format!("\x1B[2J\x1B[1;1H"));
+}
+
+fn confirmed(json_data: &Value) -> bool {
+    clear_screen();
+    print_quickview_data(json_data);
+    prompt(format!("Is this correct? (Y/n): "));
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+
+    match input.trim().to_lowercase().as_str() {
+        "" | "y" | "yes" => {
+            return true;
+        }
+        "n" | "no" => {
+            return false;
+        }
+        _ => {
+            return confirmed(json_data);
+        }
+    }
+}
+
 pub fn get_data_from_quickview(file: &str) -> Value {
     let mut input = String::new();
     let mut json_data = json_parser::parse_file(file);
 
-    print_quickview_data(&json_data);
-
     loop {
-        prompt(format!("\x1B[2J\x1B[1;1H"));
+        clear_screen();
         print_quickview_data(&json_data);
         prompt(format!("Enter JSON path for {}: {}", file, input));
 
         if let Ok(key) = console::Term::stdout().read_char() {
             match key {
                 '\n' => {
-                    println!("");
-                    break;
+                    if confirmed(&json_data) {
+                        break;
+                    }
+                    return get_data_from_quickview(file);
                 }
                 _ => {
                     input.push(key);
@@ -188,6 +213,6 @@ pub fn get_data_from_quickview(file: &str) -> Value {
         }
     }
 
-    prompt(format!("\x1B[2J\x1B[1;1H"));
+    clear_screen();
     return json_data;
 }
