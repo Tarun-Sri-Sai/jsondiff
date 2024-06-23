@@ -1,12 +1,13 @@
+use clap::{Arg, ArgMatches, Command};
+use console;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use serde_json::{self, to_string_pretty, Value};
-use std::env;
 use std::error::Error;
-use std::io;
+use std::io::{self, Write};
 use std::path::Path;
 use std::process;
 use tui::{
@@ -18,14 +19,28 @@ use tui::{
 };
 mod json_parser;
 
-pub fn read_arguments() -> (String, String) {
-    let args: Vec<String> = env::args().collect();
-    if args.len() != 3 {
-        eprintln!("Usage: {} <json file 1> <json file 2>", args[0]);
-        process::exit(0);
-    }
-
-    return (args[1].clone(), args[2].clone());
+pub fn read_arguments() -> ArgMatches {
+    return Command::new("jsondiff")
+        .arg(
+            Arg::new("file1")
+                .help("First JSON file")
+                .required(true)
+                .index(1),
+        )
+        .arg(
+            Arg::new("file2")
+                .help("Second JSON file")
+                .required(true)
+                .index(2),
+        )
+        .arg(
+            Arg::new("input_mode")
+                .short('i')
+                .long("input")
+                .value_name("INPUT_MODE")
+                .default_value("default"),
+        )
+        .get_matches();
 }
 
 pub fn assert_file_exists(path: &str) {
@@ -113,4 +128,66 @@ pub fn get_data_from_tui(file: &str) -> Result<Value, Box<dyn Error>> {
     terminal.show_cursor()?;
 
     return res;
+}
+
+fn prompt(message: String) {
+    print!("{}", message);
+    io::stdout().flush().unwrap();
+}
+
+pub fn get_data_from_inputs(file: &str) -> Value {
+    prompt(format!("Enter JSON path for {}: ", file));
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+
+    return json_parser::navigate(
+        json_parser::parse_file(file),
+        json_parser::parse_path(&input),
+    );
+}
+
+fn print_quickview_data(json_data: &Value) {
+    let pretty_json = serde_json::to_string_pretty(&json_data)
+        .unwrap_or_else(|_| "Invalid JSON data".to_string());
+    let lines: Vec<&str> = pretty_json.lines().take(10).collect();
+    for line in &lines {
+        println!("{}", line);
+    }
+
+    let all_lines: Vec<&str> = pretty_json.lines().collect();
+    if all_lines.len() > lines.len() {
+        println!("...more");
+    }
+}
+
+pub fn get_data_from_quickview(file: &str) -> Value {
+    let mut input = String::new();
+    let mut json_data = json_parser::parse_file(file);
+
+    print_quickview_data(&json_data);
+
+    loop {
+        prompt(format!("\x1B[2J\x1B[1;1H"));
+        print_quickview_data(&json_data);
+        prompt(format!("Enter JSON path for {}: {}", file, input));
+
+        if let Ok(key) = console::Term::stdout().read_char() {
+            match key {
+                '\n' => {
+                    println!("");
+                    break;
+                }
+                _ => {
+                    input.push(key);
+                    json_data = json_parser::navigate(
+                        json_parser::parse_file(file),
+                        json_parser::parse_path(&input),
+                    );
+                }
+            }
+        }
+    }
+
+    prompt(format!("\x1B[2J\x1B[1;1H"));
+    return json_data;
 }

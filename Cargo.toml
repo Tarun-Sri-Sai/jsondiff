@@ -4,6 +4,8 @@ version = "2.0.0"
 edition = "2021"
 
 [dependencies]
+clap = "4.5.7"
+console = "0.15.8"
 crossterm = "0.27.0"
 difference = "2.0.0"
 serde_json = "1.0.117"

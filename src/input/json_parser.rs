@@ -76,15 +76,15 @@ pub fn navigate(file_data: Value, keys: Vec<String>) -> Value {
         let inner_data = match array_index {
             None => {
                 if key.len() < 2 {
-                    return file_data;
+                    return data.clone();
                 }
                 match data.get(&key[1..key.len() - 1]) {
-                    None => return file_data,
+                    None => return data.clone(),
                     Some(property) => property,
                 }
             }
             Some(res) => match data.get(res) {
-                None => return file_data,
+                None => return data.clone(),
                 Some(res) => res,
             },
         };
