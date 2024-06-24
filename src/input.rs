@@ -17,6 +17,7 @@ use tui::{
     widgets::{Block, Borders, Paragraph},
     Terminal,
 };
+use clearscreen;
 mod json_parser;
 
 pub fn read_arguments() -> ArgMatches {
@@ -135,15 +136,15 @@ fn prompt(message: String) {
     io::stdout().flush().unwrap();
 }
 
-pub fn get_data_from_inputs(file: &str) -> Value {
+pub fn get_data_from_inputs(file: &str) -> Result<Value, Box<dyn Error>> {
     prompt(format!("Enter JSON path for {}: ", file));
     let mut input = String::new();
     io::stdin().read_line(&mut input).unwrap();
 
-    return json_parser::navigate(
+    return Ok(json_parser::navigate(
         json_parser::parse_file(file),
         json_parser::parse_path(&input),
-    );
+    ));
 }
 
 fn print_quickview_data(json_data: &Value) {
@@ -161,7 +162,7 @@ fn print_quickview_data(json_data: &Value) {
 }
 
 fn clear_screen() {
-    prompt(format!("\x1B[2J\x1B[1;1H"));
+    clearscreen::clear().unwrap();
 }
 
 fn confirmed(json_data: &Value) -> bool {
@@ -185,7 +186,7 @@ fn confirmed(json_data: &Value) -> bool {
     }
 }
 
-pub fn get_data_from_quickview(file: &str) -> Value {
+pub fn get_data_from_quickview(file: &str) -> Result<Value, Box<dyn Error>> {
     let mut input = String::new();
     let mut json_data = json_parser::parse_file(file);
 
@@ -214,5 +215,5 @@ pub fn get_data_from_quickview(file: &str) -> Value {
     }
 
     clear_screen();
-    return json_data;
+    return Ok(json_data);
 }
