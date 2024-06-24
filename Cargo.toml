@@ -5,8 +5,10 @@ edition = "2021"
 
 [dependencies]
 clap = "4.5.7"
+clearscreen = "3.0.0"
 console = "0.15.8"
 crossterm = "0.27.0"
+ctrlc = "3.4.4"
 difference = "2.0.0"
 serde_json = "1.0.117"
 termcolor = "1.4.1"
