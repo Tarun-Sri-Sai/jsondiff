@@ -13,7 +13,7 @@ This tool is built using Rust, so it can be installed by compiling the source co
 
 ### For Windows
 
-You can download the [Windows installation script](./Install.ps1) and execute it in a machine using PowerShell.
+You can download the [Windows installation script](./Install.ps1) and execute it in a machine using PowerShell as Administrator.
 
 ```powershell
 powershell.exe -File .\Install.ps1
