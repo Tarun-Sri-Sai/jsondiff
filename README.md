@@ -2,29 +2,30 @@
 
 This CLI tool allows comparing JSON data in two files from the terminal. It allows the user to input two files, navigate through them using a neat JSON path syntax and provides a line-based comparison.
 
+## Requirements
+
+- git
+- cargo
+
 ## Installation
 
-This tool is built using Rust, so it can be installed by compiling the source code with `cargo` from the Rust toolchain. The binary can be built using the following shell commands.
-
-```bash
-git clone https://github.com/Tarun-Sri-Sai/jsondiff.git
-cd jsondiff
-cargo build --release
-```
+This tool is built using Rust, so it can be installed by compiling the source code with `cargo` from the [Rust page](https://www.rust-lang.org/tools/install).
 
 ### For Windows
 
-```cmd
-mkdir "C:\Program Files\jsondiff"
-mv .\target\release\jsondiff.exe "C:\Program Files\jsondiff\"
-```
+You can download the [Windows installation script](./Install.ps1) and execute it in a machine using PowerShell.
 
-_Note: Add `C:\Program Files\jsondiff` to your PATH environment variable._
+```powershell
+powershell.exe -File .\Install.ps1
+```
 
 ### For Linux
 
+You can download the [Linux installation script](./install.sh) and execute it.
+
 ```bash
-mv ./target/release/jsondiff /usr/local/bin
+chmod +x ./install.sh
+./install.sh
 ```
 
 ## Usage

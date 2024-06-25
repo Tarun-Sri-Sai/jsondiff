@@ -1,5 +1,4 @@
 use clap::{Arg, ArgMatches, Command};
-use clearscreen;
 use console;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
@@ -159,7 +158,13 @@ fn print_quickview_data(json_data: &Value) {
 }
 
 fn clear_screen() {
-    clearscreen::clear().unwrap();
+    match console::Term::stdout().clear_screen() {
+        Ok(_) => (),
+        Err(e) => {
+            eprintln!("Error clearing screen: {}", e);
+            process::exit(0);
+        }
+    };
 }
 
 fn confirmed(json_data: &Value) -> bool {
