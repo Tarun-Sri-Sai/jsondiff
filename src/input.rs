@@ -6,10 +6,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use serde_json::{self, to_string_pretty, Value};
-use std::error::Error;
-use std::io::{self, Write};
-use std::path::Path;
-use std::process;
+use std::{error::Error, io, io::Write, path::Path, process};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -17,7 +14,6 @@ use tui::{
     widgets::{Block, Borders, Paragraph},
     Terminal,
 };
-use clearscreen;
 mod json_parser;
 
 pub fn read_arguments() -> ArgMatches {
@@ -162,7 +158,13 @@ fn print_quickview_data(json_data: &Value) {
 }
 
 fn clear_screen() {
-    clearscreen::clear().unwrap();
+    match console::Term::stdout().clear_screen() {
+        Ok(_) => (),
+        Err(e) => {
+            eprintln!("Error clearing screen: {}", e);
+            process::exit(0);
+        }
+    };
 }
 
 fn confirmed(json_data: &Value) -> bool {
