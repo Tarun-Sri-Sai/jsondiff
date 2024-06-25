@@ -1,5 +1,5 @@
-use std::process;
 use ctrlc;
+use std::process;
 mod input;
 mod json_diff;
 
@@ -7,7 +7,8 @@ fn main() {
     ctrlc::set_handler(move || {
         eprintln!("\nProcess interrupted");
         process::exit(0);
-    }).expect("Error setting Ctrl-C handler");
+    })
+    .expect("Error setting Ctrl-C handler");
 
     let args = input::read_arguments();
 
@@ -42,14 +43,20 @@ fn main() {
             json_data1 = match input::get_data_from_quickview(file1) {
                 Ok(res) => res,
                 Err(e) => {
-                    eprintln!("Error getting JSON data from quickview for {}: {}", file1, e);
+                    eprintln!(
+                        "Error getting JSON data from quickview for {}: {}",
+                        file1, e
+                    );
                     process::exit(0);
                 }
             };
             json_data2 = match input::get_data_from_quickview(file2) {
                 Ok(res) => res,
                 Err(e) => {
-                    eprintln!("Error getting JSON data from quickview for {}: {}", file2, e);
+                    eprintln!(
+                        "Error getting JSON data from quickview for {}: {}",
+                        file2, e
+                    );
                     process::exit(0);
                 }
             };

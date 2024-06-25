@@ -1,6 +1,5 @@
 use serde_json::Value;
-use std::fs;
-use std::process;
+use std::{fs, process};
 
 pub fn parse_file(path: &str) -> Value {
     let file_data = match fs::read_to_string(path) {

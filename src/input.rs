@@ -1,4 +1,5 @@
 use clap::{Arg, ArgMatches, Command};
+use clearscreen;
 use console;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode},
@@ -6,10 +7,7 @@ use crossterm::{
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
 use serde_json::{self, to_string_pretty, Value};
-use std::error::Error;
-use std::io::{self, Write};
-use std::path::Path;
-use std::process;
+use std::{error::Error, io, io::Write, path::Path, process};
 use tui::{
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
@@ -17,7 +15,6 @@ use tui::{
     widgets::{Block, Borders, Paragraph},
     Terminal,
 };
-use clearscreen;
 mod json_parser;
 
 pub fn read_arguments() -> ArgMatches {
