@@ -15,19 +15,19 @@ Move-Item -Force '.\target\release\jsondiff.exe' "$destDirectory"
 Write-Host "Adding $destDirectory to PATH."
 if (Test-Path -Path $destDirectory) {
     $machinePath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::Machine)
-    if (-not $machinePath.Split(";") -contains $destDirectory) {
+    if ($machinePath.Split(";") -contains $destDirectory) {
+        Write-Host "$destDirectory is already in Machine PATH."
+    } else {
         [System.Environment]::SetEnvironmentVariable("Path", "$machinePath;$destDirectory", [System.EnvironmentVariableTarget]::Machine)
         Write-Host "Added $destDirectory to Machine PATH."
-    } else {
-        Write-Host "$destDirectory is already in Machine PATH."
     }
 
     $userPath = [System.Environment]::GetEnvironmentVariable("Path", [System.EnvironmentVariableTarget]::User)
-    if (-not $userPath.Split(";") -contains $destDirectory) {
+    if ($userPath.Split(";") -contains $destDirectory) {
+        Write-Host "$destDirectory is already in User PATH."
+    } else {
         [System.Environment]::SetEnvironmentVariable("Path", "$userPath;$destDirectory", [System.EnvironmentVariableTarget]::User)
         Write-Host "Added $destDirectory to User PATH."
-    } else {
-        Write-Host "$destDirectory is already in User PATH."
     }
 } else {
     Write-Host "Directory $destDirectory does not exist."
