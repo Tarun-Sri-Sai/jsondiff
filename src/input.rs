@@ -5,7 +5,7 @@ use crossterm::{
     execute,
     terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use serde_json::{self, to_string_pretty, Value};
+use serde_json::{to_string_pretty, Value};
 use std::{error::Error, io, io::Write, path::Path, process};
 use tui::{
     backend::{Backend, CrosstermBackend},
@@ -17,7 +17,7 @@ use tui::{
 mod json_parser;
 
 pub fn read_arguments() -> ArgMatches {
-    return Command::new("jsondiff")
+    let mut command = Command::new("jsondiff")
         .arg(
             Arg::new("file1")
                 .help("First JSON file")
@@ -36,8 +36,14 @@ pub fn read_arguments() -> ArgMatches {
                 .long("input")
                 .value_name("INPUT_MODE")
                 .default_value("default"),
-        )
-        .get_matches();
+        );
+    return match command.clone().try_get_matches() {
+        Ok(res) => res,
+        Err(_) => {
+            command.print_help().unwrap();
+            process::exit(0);
+        }
+    };
 }
 
 pub fn assert_file_exists(path: &str) {
