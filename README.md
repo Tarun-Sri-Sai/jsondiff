@@ -1,4 +1,4 @@
-# jsondiff: v3.0.4
+# jsondiff: v3.0.5
 
 This CLI tool allows comparing JSON data in two files from the terminal. It allows the user to input two files, navigate through them using a neat JSON path syntax and provides a line-based comparison.
 
